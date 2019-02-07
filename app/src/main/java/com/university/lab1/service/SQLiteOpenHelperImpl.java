@@ -19,7 +19,6 @@ public class SQLiteOpenHelperImpl extends SQLiteOpenHelper {
                 + "id integer primary key autoincrement unique,"
                 + "russian text unique,"
                 + "english text unique,"
-                + "imageLocalPath text unique,"
                 + "isInArchive integer);");
     }
 

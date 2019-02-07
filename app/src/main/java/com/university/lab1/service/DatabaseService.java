@@ -46,7 +46,6 @@ public class DatabaseService {
                 word.setId(query.getInt(0));
                 word.setRussianTranslate(query.getString(1));
                 word.setEnglishTranslate(query.getString(2));
-                word.setImageLocalPath(query.getString(3));
                 word.setInArchive(query.getInt(4) != 0);
                 words.add(word);
             } while (query.moveToNext());

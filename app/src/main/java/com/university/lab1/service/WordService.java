@@ -1,8 +1,6 @@
 package com.university.lab1.service;
 
 import android.content.Context;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.university.lab1.dto.TranslationType;
@@ -24,12 +22,15 @@ public class WordService {
     @Getter
     private TranslationType type;
     private List<Word> words;
+    private TextView[] views;
     private DatabaseService databaseService;
 
-    private Map<LinearLayout, Word> answersVersions = new HashMap<>();
-    private int answerIndex;
+    private Map<TextView, Word> answersVersions = new HashMap<>();
+    private TextView rightAnswer;
 
     Random random = new Random();
+
+    private TextView mainView;
 
     public WordService(TranslationType type, Context context) {
         this.type = type;
@@ -37,41 +38,44 @@ public class WordService {
         words = databaseService.findAll();
     }
 
-
-
-    public String nextWord(LinearLayout... layouts) throws Exception {
-        int length = layouts.length;
+    public String nextWord() throws Exception {
+        int length = views.length;
+        rightAnswer = null;
         if (length > words.size()) {
             throw new Exception("Слишком мало слов или слишком много LinearLayout");
         }
 
-        generateAnswerVersions(layouts);
+        generateAnswerVersions();
 
-        for (LinearLayout layout : layouts) {
-            ImageView imageView = (ImageView) layout.getChildAt(0);
-            TextView textView = (TextView) layout.getChildAt(1);
-
+        for (TextView textView : views) {
             if(type == TranslationType.RUS_TO_ENG){
-                textView.setText(answersVersions.get(layout).getEnglishTranslate());
+                textView.setText(answersVersions.get(textView).getEnglishTranslate());
             } else {
-                textView.setText(answersVersions.get(layout).getRussianTranslate());
+                textView.setText(answersVersions.get(textView).getRussianTranslate());
             }
         }
-        if(type == TranslationType.RUS_TO_ENG){
-            return words.get(answerIndex).getRussianTranslate();
+        Word word = answersVersions.get(rightAnswer);
+        if (word != null) {
+            if (type == TranslationType.RUS_TO_ENG) {
+                mainView.setText(word.getRussianTranslate());
+                return word.getRussianTranslate();
+            } else {
+                mainView.setText(word.getEnglishTranslate());
+                return word.getEnglishTranslate();
+            }
         } else {
-            return words.get(answerIndex).getEnglishTranslate();
+            throw new Exception("Ответ = null");
         }
     }
 
-    private void generateAnswerVersions(LinearLayout... layouts) throws Exception {
+    private void generateAnswerVersions() throws Exception {
         answersVersions.clear();
-        int rightAnswer = random.nextInt(answersVersionsMaxCount);
-        for (int i = 0; i < layouts.length; i++) {
-            if (i == rightAnswer) {
-                answerIndex = i;
+        int rightAnswerIndex = random.nextInt(answersVersionsMaxCount);
+        for (int i = 0; i < views.length; i++) {
+            if (i == rightAnswerIndex) {
+                rightAnswer = views[i];
             }
-            answersVersions.put(layouts[i], getNextRandomAnswerVersion());
+            answersVersions.put(views[i], getNextRandomAnswerVersion());
         }
     }
 
@@ -99,5 +103,30 @@ public class WordService {
             default:
                 return "";
         }
+    }
+
+    public boolean isRightAnswer(TextView textView) {
+        if (!answersVersions.isEmpty() && rightAnswer != null) {
+            return textView == rightAnswer;
+        }
+        return false;
+    }
+
+    public void checkAnswer(TextView textView) throws Exception {
+        if (isRightAnswer(textView)) {
+            nextWord();
+        }
+    }
+
+    public void close() {
+        databaseService.close();
+    }
+
+    public void setViews(TextView[] textViews) {
+        this.views = textViews;
+    }
+
+    public void setMainView(TextView main) {
+        this.mainView = main;
     }
 }

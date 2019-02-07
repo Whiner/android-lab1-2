@@ -1,14 +1,12 @@
 package com.university.lab1;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.university.lab1.dto.TranslationType;
-import com.university.lab1.service.DatabaseService;
 import com.university.lab1.service.WordService;
 
 public class MainActivity extends AppCompatActivity {
@@ -17,8 +15,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        wordService = new WordService(TranslationType.RUS_TO_ENG, this);
         setContentView(R.layout.main);
+        wordService = new WordService(
+                TranslationType.RUS_TO_ENG,
+                this
+        );
         setOnActionButtons();
     }
 
@@ -26,17 +27,51 @@ public class MainActivity extends AppCompatActivity {
         Button startButton = findViewById(R.id.startButton);
         startButton.setOnClickListener(event -> {
             setContentView(R.layout.game);
-            TextView mainWord = findViewById(R.id.word);
+            wordService.setViews(
+                    new TextView[]{
+                            findViewById(R.id.word1),
+                            findViewById(R.id.word2),
+                            findViewById(R.id.word3),
+                            findViewById(R.id.word4)});
+            wordService.setMainView(findViewById(R.id.word));
             try {
-                mainWord.setText(wordService.nextWord(
-                        findViewById(R.id.word1),
-                        findViewById(R.id.word2),
-                        findViewById(R.id.word3),
-                        findViewById(R.id.word4)
-                ));
+                wordService.nextWord();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            LinearLayout word1_layout = findViewById(R.id.word1_layout);
+            word1_layout.setOnClickListener(event1 -> {
+                try {
+                    wordService.checkAnswer((TextView) word1_layout.getChildAt(0));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            LinearLayout word2_layout = findViewById(R.id.word2_layout);
+            word2_layout.setOnClickListener(event2 -> {
+                try {
+                    wordService.checkAnswer((TextView) word2_layout.getChildAt(0));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            LinearLayout word3_layout = findViewById(R.id.word3_layout);
+            word3_layout.setOnClickListener(event3 -> {
+                try {
+                    wordService.checkAnswer((TextView) word3_layout.getChildAt(0));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            LinearLayout word4_layout = findViewById(R.id.word4_layout);
+            word4_layout.setOnClickListener(event4 -> {
+                try {
+                    wordService.checkAnswer((TextView) word4_layout.getChildAt(0));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
             Button stopButton = findViewById(R.id.stopButton);
             stopButton.setOnClickListener(v -> {
                 setContentView(R.layout.main);
@@ -50,8 +85,13 @@ public class MainActivity extends AppCompatActivity {
         changeLangButton.setOnClickListener(event -> langTextBox.setText(wordService.revertLang()));
 
 
-
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (wordService != null) {
+            wordService.close();
+        }
+    }
 }

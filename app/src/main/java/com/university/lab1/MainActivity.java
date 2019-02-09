@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -37,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initMainLayout() {
-        TextView wordsCount = findViewById(R.id.availableWordsCountTextView);
-        wordsCount.setText(String.valueOf(wordService.getAvailableWordsCount()));
+        updateAvailableWordsCount();
         Button startButton = findViewById(R.id.startButton);
         startButton.setOnClickListener(event -> {
             wordService.updateData();
@@ -88,8 +89,6 @@ public class MainActivity extends AppCompatActivity {
         TextView langTextBox = findViewById(R.id.langTextbox);
         langTextBox.setText(wordService.getType().getValue());
         changeLangButton.setOnClickListener(event -> langTextBox.setText(wordService.revertLang()));
-
-
     }
 
     private void setMainLayout() {
@@ -135,6 +134,11 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void updateAvailableWordsCount() {
+        TextView wordsCount = findViewById(R.id.availableWordsCountTextView);
+        wordsCount.setText(String.valueOf(wordService.getAvailableWordsCount()));
+    }
+
     private void showMessage(String text, int color) {
         TextView message = findViewById(R.id.message);
         if (message != null) {
@@ -164,6 +168,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void importWords(MenuItem item) {
+
+    }
+
+    public void exportWords(MenuItem item) {
+
+    }
+
+    public void refreshArchive(MenuItem item) {
+        wordService.refreshArchive();
+        updateAvailableWordsCount();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -171,4 +195,5 @@ public class MainActivity extends AppCompatActivity {
             wordService.close();
         }
     }
+
 }

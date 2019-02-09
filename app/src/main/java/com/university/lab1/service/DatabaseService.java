@@ -1,5 +1,6 @@
 package com.university.lab1.service;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -76,5 +77,15 @@ public class DatabaseService {
         int count = query.getCount();
         query.close();
         return count;
+    }
+
+    public void sendToArchive(Word word) {
+        sqLiteDatabase.update(tableName, word.toContentValues(), "id = " + word.getId(), null);
+    }
+
+    public void refreshArchive() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("isInArchive", 0);
+        sqLiteDatabase.update(tableName, contentValues, null, null);
     }
 }

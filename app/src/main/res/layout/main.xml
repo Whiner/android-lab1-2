@@ -13,6 +13,29 @@
         android:text="Русский -> Английский"
         android:textSize="18sp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Количество доступных слов:"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/availableWordsCountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="TextView"
+            android:textSize="18sp" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/startButton"
         android:layout_width="300dp"
@@ -36,44 +59,5 @@
         android:layout_marginTop="20dp"
         android:text="Поменять местами языки"
         android:textSize="18sp" />
-
-    <Button
-        android:id="@+id/importButton"
-        android:layout_width="300dp"
-        android:layout_height="62dp"
-        android:layout_marginTop="20dp"
-        android:text="Импортировать словарь"
-        android:textSize="18sp" />
-
-    <Button
-        android:id="@+id/expornButton"
-        android:layout_width="300dp"
-        android:layout_height="62dp"
-        android:layout_marginTop="20dp"
-        android:text="Экспортировать словарь"
-        android:textSize="18sp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Количество доступных слов:"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/availableWordsCountTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="TextView"
-            android:textSize="18sp" />
-    </LinearLayout>
 
 </LinearLayout>

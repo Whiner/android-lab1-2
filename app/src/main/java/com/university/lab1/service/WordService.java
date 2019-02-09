@@ -40,7 +40,7 @@ public class WordService {
         updateData();
     }
 
-    public String nextWord() throws Exception {
+    public void nextWord() throws Exception {
         rightAnswer = null;
         generateAnswerVersions();
 
@@ -55,10 +55,8 @@ public class WordService {
         if (word != null) {
             if (type == TranslationType.RUS_TO_ENG) {
                 mainView.setText(word.getRussianTranslate());
-                return word.getRussianTranslate();
             } else {
                 mainView.setText(word.getEnglishTranslate());
-                return word.getEnglishTranslate();
             }
         } else {
             throw new Exception("Ответ = null");
@@ -111,7 +109,17 @@ public class WordService {
     }
 
     public void updateData() {
-        words = databaseService.findAll();
+        List<Word> all = databaseService.findAll();
+        if (words != null && !words.isEmpty()) {
+            for (Word newWord : all) {
+                for (Word oldWord : words) {
+                    if (newWord.getId() == oldWord.getId()) {
+                        newWord.setCorrectAnswersCount(oldWord.getCorrectAnswersCount());
+                    }
+                }
+            }
+        }
+        words = all;
     }
 
     public boolean isRightAnswer(TextView textView) {
@@ -128,6 +136,7 @@ public class WordService {
                 word.incCorrectAnswer();
                 if (word.getCorrectAnswersCount() >= maxCorrectAnswersCount) {
                     word.sendToArchive();
+                    databaseService.sendToArchive(word);
                 }
             }
             return true;
@@ -159,5 +168,10 @@ public class WordService {
 
     public int getAvailableWordsCount() {
         return databaseService.getAvailableWordsCount();
+    }
+
+    public void refreshArchive() {
+        databaseService.refreshArchive();
+        updateData();
     }
 }

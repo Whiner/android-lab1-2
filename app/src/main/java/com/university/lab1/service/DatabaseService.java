@@ -20,8 +20,8 @@ public class DatabaseService {
         sqLiteDatabase = sqLiteOpenHelper.getWritableDatabase();
     }
 
-    public void insert(Word word) {
-        sqLiteDatabase.insert(tableName, null, word.toContentValues());
+    public boolean insert(Word word) {
+        return sqLiteDatabase.insert(tableName, null, word.toContentValues()) != -1;
     }
 
     public void delete(int id) {
@@ -31,7 +31,7 @@ public class DatabaseService {
     public List<Word> findAll() {
         Cursor query = sqLiteDatabase.query(
                 tableName,
-                new String[]{"id", "russian", "english", "imageLocalPath", "isInArchive"},
+                new String[]{"id", "russian", "english", "isInArchive"},
                 null,
                 null,
                 null,
@@ -46,7 +46,7 @@ public class DatabaseService {
                 word.setId(query.getInt(0));
                 word.setRussianTranslate(query.getString(1));
                 word.setEnglishTranslate(query.getString(2));
-                word.setInArchive(query.getInt(4) != 0);
+                word.setInArchive(query.getInt(3) != 0);
                 words.add(word);
             } while (query.moveToNext());
         }
@@ -63,4 +63,18 @@ public class DatabaseService {
     }
 
 
+    public int getAvailableWordsCount() {
+        Cursor query = sqLiteDatabase.query(
+                tableName,
+                new String[]{"id", "isInArchive"},
+                "isInArchive <> 1",
+                null,
+                null,
+                null,
+                null
+        );
+        int count = query.getCount();
+        query.close();
+        return count;
+    }
 }

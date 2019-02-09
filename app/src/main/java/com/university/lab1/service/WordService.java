@@ -5,6 +5,7 @@ import android.widget.TextView;
 
 import com.university.lab1.dto.TranslationType;
 import com.university.lab1.dto.Word;
+import com.university.lab1.exception.NotEnoughWordsException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ public class WordService {
     public static final String ENG_TO_RUS = "Английский -> Русский";
 
     private int answersVersionsMaxCount = 4;
+    private int maxCorrectAnswersCount = 3;
 
     @Getter
     private TranslationType type;
@@ -35,20 +37,15 @@ public class WordService {
     public WordService(TranslationType type, Context context) {
         this.type = type;
         databaseService = new DatabaseService(context);
-        words = databaseService.findAll();
+        updateData();
     }
 
     public String nextWord() throws Exception {
-        int length = views.length;
         rightAnswer = null;
-        if (length > words.size()) {
-            throw new Exception("Слишком мало слов или слишком много LinearLayout");
-        }
-
         generateAnswerVersions();
 
         for (TextView textView : views) {
-            if(type == TranslationType.RUS_TO_ENG){
+            if (type == TranslationType.RUS_TO_ENG) {
                 textView.setText(answersVersions.get(textView).getEnglishTranslate());
             } else {
                 textView.setText(answersVersions.get(textView).getRussianTranslate());
@@ -70,6 +67,7 @@ public class WordService {
 
     private void generateAnswerVersions() throws Exception {
         answersVersions.clear();
+        checkAvailableWords();
         int rightAnswerIndex = random.nextInt(answersVersionsMaxCount);
         for (int i = 0; i < views.length; i++) {
             if (i == rightAnswerIndex) {
@@ -79,15 +77,22 @@ public class WordService {
         }
     }
 
-    private Word getNextRandomAnswerVersion() throws Exception {
-        if (words.size() <= answersVersions.size() || answersVersions.size() >= answersVersionsMaxCount) {
-            throw new Exception("Слов слишком мало");
+    public void checkAvailableWords() throws NotEnoughWordsException {
+        if (countWordsInArchive() >= words.size() - answersVersionsMaxCount) {
+            throw new NotEnoughWordsException("Доступных слов слишком мало, либо они в архиве. Очистите архив или добавьте еще слов.");
         }
-        Word word;
+    }
 
+    private Word getNextRandomAnswerVersion() throws Exception {
+        if (words.size() <= answersVersions.size()
+                || answersVersions.size() >= answersVersionsMaxCount) {
+            throw new Exception("Не хватает слов");
+        }
+
+        Word word;
         do {
             word = words.get(random.nextInt(words.size()));
-        } while (answersVersions.containsValue(word));
+        } while (answersVersions.containsValue(word) || word.isInArchive());
         return word;
     }
 
@@ -105,6 +110,10 @@ public class WordService {
         }
     }
 
+    public void updateData() {
+        words = databaseService.findAll();
+    }
+
     public boolean isRightAnswer(TextView textView) {
         if (!answersVersions.isEmpty() && rightAnswer != null) {
             return textView == rightAnswer;
@@ -112,10 +121,18 @@ public class WordService {
         return false;
     }
 
-    public void checkAnswer(TextView textView) throws Exception {
+    public boolean checkAnswer(TextView textView) {
         if (isRightAnswer(textView)) {
-            nextWord();
+            Word word = answersVersions.get(textView);
+            if (word != null) {
+                word.incCorrectAnswer();
+                if (word.getCorrectAnswersCount() >= maxCorrectAnswersCount) {
+                    word.sendToArchive();
+                }
+            }
+            return true;
         }
+        return false;
     }
 
     public void close() {
@@ -128,5 +145,19 @@ public class WordService {
 
     public void setMainView(TextView main) {
         this.mainView = main;
+    }
+
+    private int countWordsInArchive() {
+        int count = 0;
+        for (Word word : words) {
+            if (word.isInArchive()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int getAvailableWordsCount() {
+        return databaseService.getAvailableWordsCount();
     }
 }

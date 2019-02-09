@@ -12,6 +12,7 @@ public class Word {
     private String russianTranslate;
     private String englishTranslate;
     private boolean isInArchive;
+    private int correctAnswersCount = 0;
 
     public ContentValues toContentValues(){
         ContentValues contentValues = new ContentValues();
@@ -25,5 +26,14 @@ public class Word {
         this.russianTranslate = russianTranslate;
         this.englishTranslate = englishTranslate;
         this.isInArchive = isInArchive;
+    }
+
+    public void incCorrectAnswer() {
+        correctAnswersCount++;
+    }
+
+    public void sendToArchive() {
+        isInArchive = true;
+        correctAnswersCount = 0;
     }
 }

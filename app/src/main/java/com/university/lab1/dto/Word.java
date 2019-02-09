@@ -36,4 +36,8 @@ public class Word {
         isInArchive = true;
         correctAnswersCount = 0;
     }
+
+    public String toFileForm() {
+        return "[" + russianTranslate + "]:[" + englishTranslate + "]:[" + isInArchive + "]";
+    }
 }

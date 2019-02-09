@@ -3,6 +3,7 @@ package com.university.lab1;
 import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +17,7 @@ import com.university.lab1.dto.TranslationType;
 import com.university.lab1.exception.NotEnoughWordsException;
 import com.university.lab1.exception.WordExistException;
 import com.university.lab1.service.AddService;
+import com.university.lab1.service.FileService;
 import com.university.lab1.service.MyTimerTask;
 import com.university.lab1.service.SpeechService;
 import com.university.lab1.service.WordService;
@@ -24,10 +26,14 @@ import java.util.Locale;
 import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity {
+    private String EXPORT_FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
+    private String EXPORT_FILE_NAME = "words.txt";
+
     private WordService wordService;
     private AddService addService;
     private SpeechService speechService;
     private Timer timer = new Timer();
+    private FileService fileService = new FileService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,7 +198,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void exportWords(MenuItem item) {
-
+        try {
+            fileService.exportToFile(EXPORT_FILE_PATH, EXPORT_FILE_NAME, wordService.getWords());
+        } catch (Exception e) {
+            showExceptionDialog(e.getMessage());
+        }
     }
 
     public void refreshArchive(MenuItem item) {

@@ -23,6 +23,7 @@ public class WordService {
 
     @Getter
     private TranslationType type;
+    @Getter
     private List<Word> words;
     private TextView[] views;
     private DatabaseService databaseService;

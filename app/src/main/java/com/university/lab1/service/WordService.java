@@ -45,11 +45,14 @@ public class WordService {
         generateAnswerVersions();
 
         for (TextView textView : views) {
+            String text;
             if (type == TranslationType.RUS_TO_ENG) {
-                textView.setText(answersVersions.get(textView).getEnglishTranslate());
+                text = answersVersions.get(textView).getEnglishTranslate();
             } else {
-                textView.setText(answersVersions.get(textView).getRussianTranslate());
+                text = answersVersions.get(textView).getRussianTranslate();
             }
+            text = text.substring(0, 1).toUpperCase() + text.substring(1);
+            textView.setText(text);
         }
         Word word = answersVersions.get(rightAnswer);
         if (word != null) {

@@ -17,13 +17,16 @@ import com.university.lab1.exception.NotEnoughWordsException;
 import com.university.lab1.exception.WordExistException;
 import com.university.lab1.service.AddService;
 import com.university.lab1.service.MyTimerTask;
+import com.university.lab1.service.SpeechService;
 import com.university.lab1.service.WordService;
 
+import java.util.Locale;
 import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity {
     private WordService wordService;
     private AddService addService;
+    private SpeechService speechService;
     private Timer timer = new Timer();
 
     @Override
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
                 this
         );
         addService = new AddService(this);
+        speechService = new SpeechService(this);
         initMainLayout();
     }
 
@@ -59,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
                 setLayoutListener(R.id.word2_layout);
                 setLayoutListener(R.id.word3_layout);
                 setLayoutListener(R.id.word4_layout);
+
+
+                Button playButton = findViewById(R.id.playWord);
+                playButton.setOnClickListener(v -> {
+                    TextView word = findViewById(R.id.word);
+                    listenWord(word.getText().toString());
+                });
 
                 Button stopButton = findViewById(R.id.stopButton);
                 stopButton.setOnClickListener(v -> setMainLayout());
@@ -102,6 +113,14 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Добавлено!", Toast.LENGTH_SHORT).show();
         } catch (WordExistException e) {
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void listenWord(String text) {
+        if (wordService.getType() == TranslationType.RUS_TO_ENG) {
+            speechService.speech(text, new Locale("ru"));
+        } else {
+            speechService.speech(text, Locale.ENGLISH);
         }
     }
 

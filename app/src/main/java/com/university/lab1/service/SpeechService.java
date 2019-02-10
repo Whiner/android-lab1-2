@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 
 import java.util.Locale;
 
@@ -13,9 +14,7 @@ public class SpeechService {
     private TextToSpeech textToSpeech;
 
     public SpeechService(Context context) {
-        textToSpeech = new TextToSpeech(context, status -> {
-
-        });
+        textToSpeech = new TextToSpeech(context, status -> Log.d("tss_debug", String.valueOf(status)));
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -24,4 +23,7 @@ public class SpeechService {
         textToSpeech.speak(text, QUEUE_ADD, null);
     }
 
+    public void destroy() {
+        textToSpeech.shutdown();
+    }
 }

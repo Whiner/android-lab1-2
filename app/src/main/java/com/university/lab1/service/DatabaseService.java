@@ -88,4 +88,17 @@ public class DatabaseService {
         contentValues.put("isInArchive", 0);
         sqLiteDatabase.update(tableName, contentValues, null, null);
     }
+
+    public void insertAllWords(List<Word> words) {
+        try {
+            sqLiteDatabase.beginTransaction();
+            for (Word word : words) {
+                sqLiteDatabase.insert(tableName, null, word.toContentValues());
+            }
+            sqLiteDatabase.setTransactionSuccessful();
+        } finally {
+            sqLiteDatabase.endTransaction();
+        }
+
+    }
 }

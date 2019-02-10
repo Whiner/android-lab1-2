@@ -57,11 +57,14 @@ public class WordService {
         }
         Word word = answersVersions.get(rightAnswer);
         if (word != null) {
+            String text;
             if (type == TranslationType.RUS_TO_ENG) {
-                mainView.setText(word.getRussianTranslate());
+                text = word.getRussianTranslate();
             } else {
-                mainView.setText(word.getEnglishTranslate());
+                text = word.getEnglishTranslate();
             }
+            text = text.substring(0, 1).toUpperCase() + text.substring(1);
+            mainView.setText(text);
         } else {
             throw new Exception("Ответ = null");
         }
@@ -176,6 +179,11 @@ public class WordService {
 
     public void refreshArchive() {
         databaseService.refreshArchive();
+        updateData();
+    }
+
+    public void addAll(List<Word> words) {
+        databaseService.insertAllWords(words);
         updateData();
     }
 }

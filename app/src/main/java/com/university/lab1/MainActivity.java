@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.university.lab1.dto.TranslationType;
+import com.university.lab1.dto.Word;
 import com.university.lab1.exception.NotEnoughWordsException;
 import com.university.lab1.exception.WordExistException;
 import com.university.lab1.service.AddService;
@@ -22,6 +23,7 @@ import com.university.lab1.service.MyTimerTask;
 import com.university.lab1.service.SpeechService;
 import com.university.lab1.service.WordService;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 
@@ -194,7 +196,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void importWords(MenuItem item) {
-
+        fileService.openFileDialog(this, fileName -> {
+            try {
+                List<Word> words = fileService.importFromFile(fileName);
+                wordService.addAll(words);
+                updateAvailableWordsCount();
+                Toast.makeText(this, "Успешно импортировано!", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                showExceptionDialog(e.getMessage());
+            }
+        });
     }
 
     public void exportWords(MenuItem item) {
@@ -223,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
         if (wordService != null) {
             wordService.close();
         }
+        speechService.destroy();
     }
 
 }
